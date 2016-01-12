@@ -43,9 +43,9 @@ defmodule StopWatch.Mixfile do
 
   defp package do
     [
-     files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
-     maintainers: ["Matteo Giachino"],
-     licenses: ["MIT"],
-     links: %{"GitHub" => "https://github.com/matteosister/stopwatch"}]
+      maintainers: ["Matteo Giachino"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/matteosister/stopwatch"}
+    ]
   end
 end
