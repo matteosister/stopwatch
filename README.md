@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/matteosister/stopwatch.svg?branch=master)](https://travis-ci.org/matteosister/stopwatch)
 
-The stopwatch provides an easy api to measure elapsed time and
+stopwatch provides an easy api to measure elapsed time and
 profile code.
 
 ## Installation
