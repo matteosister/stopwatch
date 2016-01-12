@@ -1,6 +1,7 @@
 defmodule Stopwatch.TimerTest do
   use ExUnit.Case
   use Stopwatch
+  doctest Stopwatch.Timer
 
   setup do
     Timer.clear

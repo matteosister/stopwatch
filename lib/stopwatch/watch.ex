@@ -3,39 +3,45 @@ defmodule Stopwatch.Watch do
   use Stopwatch
   defstruct name: nil, start_time: nil, laps: [], finish_time: nil
 
-  @doc """
-  creates a new timer that starts from the given time
-  defaults to now
-  """
+  @doc false
   def new(name, start_time \\ Time.now) do
     %Watch{name: name, start_time: start_time}
   end
 
-  @doc """
-  creates a lap in a timer
-  """
-  def lap(stopwatch, name) do
-    Map.update!(stopwatch, :laps, &([{name, Time.now} | &1]))
+  @doc false
+  def lap(watch, name) do
+    Map.update!(watch, :laps, &([{name, Time.now} | &1]))
   end
 
-  @doc """
-  stop a timer
-  """
-  def stop(stopwatch, at \\ Time.now)
-  def stop(stopwatch = %Watch{finish_time: nil}, at) do
-    Map.update!(stopwatch, :finish_time, fn(_) -> at end)
+  @doc false
+  def stop(watch, at \\ Time.now)
+  def stop(watch = %Watch{finish_time: nil}, at) do
+    Map.update!(watch, :finish_time, fn(_) -> at end)
   end
-  def stop(%Watch{name: name}, _) do
-    raise "The stop watch #{name} is already stopped"
-  end
+  def stop(watch, _), do: watch
 
   @doc """
   gets a timer total time
+
+  possible units are:
+  - :usecs
+  - :msecs
+  - :secs
+  - :mins
+  - :hours
+  - :days
+  - :weeks
   """
-  def total_time(%Watch{start_time: start_time, finish_time: nil}) do
-    Time.sub(Time.now, start_time)
+  def total_time(watch, unit \\ :msecs)
+  def total_time(%Watch{start_time: start, finish_time: nil}, unit) do
+    Time.sub(Time.now, start) |> convert_time(unit) |> round
   end
-  def total_time(%Watch{start_time: start_time, finish_time: finish_time}) do
-    Time.sub(finish_time, start_time)
+  def total_time(%Watch{start_time: start, finish_time: finish}, unit) do
+    Time.sub(finish, start) |> convert_time(unit) |> round
+  end
+
+  defp convert_time(time, unit) do
+    method = "to_#{to_string(unit)}"
+    apply(Timex.Time, String.to_atom(method), [time])
   end
 end
