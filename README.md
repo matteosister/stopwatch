@@ -1,10 +1,13 @@
 # Stopwatch
 
-**TODO: Add description**
+[![Build Status](https://travis-ci.org/matteosister/stopwatch.svg?branch=master)](https://travis-ci.org/matteosister/stopwatch)
+
+The stopwatch provides an easy api to measure elapsed time and
+profile code.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+The package can be installed as:
 
   1. Add stopwatch to your list of dependencies in `mix.exs`:
 
