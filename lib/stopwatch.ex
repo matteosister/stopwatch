@@ -1,10 +1,10 @@
-defmodule StopWatch do
+defmodule Stopwatch do
   use Application
 
   defmacro __using__(_) do
     quote do
-      alias StopWatch.Watch
-      alias StopWatch.Timer
+      alias Stopwatch.Watch
+      alias Stopwatch.Timer
     end
   end
 
@@ -15,12 +15,12 @@ defmodule StopWatch do
 
     children = [
       # Define workers and child supervisors to be supervised
-      worker(StopWatch.Timer, []),
+      worker(Stopwatch.Timer, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: StopWatch.Supervisor]
+    opts = [strategy: :one_for_one, name: Stopwatch.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

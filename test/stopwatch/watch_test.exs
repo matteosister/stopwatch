@@ -1,6 +1,6 @@
-defmodule StopWatch.WatchTest do
+defmodule Stopwatch.WatchTest do
   use ExUnit.Case, async: true
-  use StopWatch
+  use Stopwatch
   use Timex
 
   test "new timer" do

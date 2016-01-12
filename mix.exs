@@ -2,7 +2,7 @@ defmodule StopWatch.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :stop_watch,
+    [app: :stopwatch,
      version: "0.0.1",
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
@@ -15,7 +15,7 @@ defmodule StopWatch.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger, :tzdata],
-     mod: {StopWatch, []}]
+     mod: {Stopwatch, []}]
   end
 
   # Dependencies can be Hex packages:
@@ -28,6 +28,7 @@ defmodule StopWatch.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:timex, "~> 1.0"}]
+    [{:timex, "~> 1.0"},
+     {:dialyxir, "~> 0.3", only: [:dev]}]
   end
 end

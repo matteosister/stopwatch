@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :stop_watch, key: :value
+#     config :stopwatch, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:stop_watch, :key)
+#     Application.get_env(:stopwatch, :key)
 #
 # Or configure a 3rd-party app:
 #

@@ -1,6 +1,6 @@
-defmodule StopWatch.Watch do
+defmodule Stopwatch.Watch do
   use Timex
-  use StopWatch
+  use Stopwatch
   defstruct name: nil, start_time: nil, laps: [], finish_time: nil
 
   @doc """
@@ -14,16 +14,16 @@ defmodule StopWatch.Watch do
   @doc """
   creates a lap in a timer
   """
-  def lap(stop_watch, name) do
-    Map.update!(stop_watch, :laps, &([{name, Time.now} | &1]))
+  def lap(stopwatch, name) do
+    Map.update!(stopwatch, :laps, &([{name, Time.now} | &1]))
   end
 
   @doc """
   stop a timer
   """
-  def stop(stop_watch, at \\ Time.now)
-  def stop(stop_watch = %Watch{finish_time: nil}, at) do
-    Map.update!(stop_watch, :finish_time, fn(_) -> at end)
+  def stop(stopwatch, at \\ Time.now)
+  def stop(stopwatch = %Watch{finish_time: nil}, at) do
+    Map.update!(stopwatch, :finish_time, fn(_) -> at end)
   end
   def stop(%Watch{name: name}, _) do
     raise "The stop watch #{name} is already stopped"
