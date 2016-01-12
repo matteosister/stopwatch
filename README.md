@@ -1,4 +1,4 @@
-# StopWatch
+# Stopwatch
 
 **TODO: Add description**
 
@@ -6,15 +6,14 @@
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  1. Add stop_watch to your list of dependencies in `mix.exs`:
+  1. Add stopwatch to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:stop_watch, "~> 0.0.1"}]
+          [{:stopwatch, "~> 0.0.1"}]
         end
 
-  2. Ensure stop_watch is started before your application:
+  2. Ensure stopwatch is started before your application:
 
         def application do
-          [applications: [:stop_watch]]
+          [applications: [:stopwatch]]
         end
-
