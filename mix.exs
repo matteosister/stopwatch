@@ -5,8 +5,10 @@ defmodule StopWatch.Mixfile do
     [app: :stopwatch,
      version: "0.0.1",
      elixir: "~> 1.0",
-     description: "The stopwatch provide methods to profile code",
+     description: description,
      package: package,
+     name: "Stopwatch",
+     source_url: "https://github.com/matteosister/stopwatch",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
@@ -31,7 +33,9 @@ defmodule StopWatch.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:timex, "~> 1.0"},
-     {:dialyxir, "~> 0.3", only: [:dev]}]
+     {:dialyxir, "~> 0.3", only: [:dev]},
+     {:earmark, "~> 0.1", only: :dev},
+     {:ex_doc, "~> 0.11", only: :dev}]
   end
 
   defp description do
