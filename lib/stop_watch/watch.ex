@@ -1,7 +1,7 @@
 defmodule StopWatch.Watch do
   use Timex
   use StopWatch
-  defstruct name: nil, start_time: nil, laps: [], finish: nil
+  defstruct name: nil, start_time: nil, laps: [], finish_time: nil
 
   @doc """
   creates a new timer that starts from the given time
@@ -21,22 +21,21 @@ defmodule StopWatch.Watch do
   @doc """
   stop a timer
   """
-  def stop(stop_watch) do
-    Map.update!(stop_watch, :finish, fn
-      finish when is_nil(finish) ->
-        Time.now
-      _                          ->
-        raise "The timer #{stop_watch.name} is already stopped"
-    end)
+  def stop(stop_watch, at \\ Time.now)
+  def stop(stop_watch = %Watch{finish_time: nil}, at) do
+    Map.update!(stop_watch, :finish_time, fn(_) -> at end)
+  end
+  def stop(%Watch{name: name}, _) do
+    raise "The stop watch #{name} is already stopped"
   end
 
   @doc """
   gets a timer total time
   """
-  def total_time(%Watch{start_time: start_time, finish: nil}) do
+  def total_time(%Watch{start_time: start_time, finish_time: nil}) do
     Time.sub(Time.now, start_time)
   end
-  def total_time(%Watch{start_time: start_time, finish: finish}) do
-    Time.sub(finish, start_time)
+  def total_time(%Watch{start_time: start_time, finish_time: finish_time}) do
+    Time.sub(finish_time, start_time)
   end
 end

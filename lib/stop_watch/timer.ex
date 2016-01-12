@@ -80,10 +80,6 @@ defmodule StopWatch.Timer do
     get_stopwatch(stop_watches, name) !== nil
   end
 
-  defp names(stop_watches) do
-    Enum.map(stop_watches, &(&1.name))
-  end
-
   defp name_checker(name) do
     &(&1.name === name)
   end
