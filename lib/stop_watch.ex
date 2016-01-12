@@ -3,6 +3,7 @@ defmodule StopWatch do
 
   defmacro __using__(_) do
     quote do
+      alias StopWatch.Watch
       alias StopWatch.Timer
     end
   end
@@ -14,7 +15,7 @@ defmodule StopWatch do
 
     children = [
       # Define workers and child supervisors to be supervised
-      worker(StopWatch.TimerServer, []),
+      worker(StopWatch.Timer, []),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
