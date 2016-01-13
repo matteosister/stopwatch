@@ -7,10 +7,10 @@ defmodule Stopwatch do
 
   ## Examples
 
-      iex> Stopwatch.Timer.start(:test)
+      iex> watch = Stopwatch.Timer.start
       ...> :timer.sleep(10)
-      ...> t = Stopwatch.Timer.stop(:test)
-      ...> Stopwatch.Watch.total_time(t) >= 10
+      ...> watch = Stopwatch.Timer.stop(watch)
+      ...> Stopwatch.Watch.total_time(watch) >= 10
       true
   """
   use Application

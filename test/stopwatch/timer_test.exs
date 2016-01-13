@@ -17,8 +17,8 @@ defmodule Stopwatch.TimerTest do
   end
 
   test "count after insert and stop is 0" do
-    Timer.start :test
-    Timer.stop :test
+    t = Timer.start :test
+    Timer.stop t
     assert 0 === Timer.count
   end
 end

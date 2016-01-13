@@ -2,8 +2,7 @@ defmodule Stopwatch.Timer do
   @moduledoc """
   This module provides a friendly API for working with timers
 
-  It allows you to start, lap, stop and clear timers referencing them
-  *by name*.
+  It allows you to start, lap and stop Watch structs
   """
 
   use GenServer
@@ -16,16 +15,11 @@ defmodule Stopwatch.Timer do
   end
 
   @doc """
-  Start a new timer by giving it a an arbitrary name and an optional start time
-  The name can be anything that is unique to your application. A good idea
-  could be an atom or a binary string.
-
-  Be careful, no error is raised if you start two timers with the same name,
-  the last one will simply replace the first.
+  Start a new timer by giving it an optional start time
   """
-  @spec start(any, Timex.Time) :: any
-  def start(name, start_time \\ Time.now) do
-    GenServer.cast(:timer_server, {:start, name, start_time})
+  @spec start(Timex.Time) :: Watch
+  def start(start_time \\ Time.now) do
+    GenServer.call(:timer_server, {:start, start_time})
   end
 
   @doc """
@@ -56,8 +50,8 @@ defmodule Stopwatch.Timer do
   You can optionally give the a name to the lap for later use
   """
   @spec lap(Stopwatch.Watch, binary) :: Stopwatch.Watch
-  def lap(stopwatch, name \\ nil) do
-    GenServer.cast(:timer_server, {:lap, stopwatch, name})
+  def lap(watch, name \\ nil) do
+    GenServer.call(:timer_server, {:lap, watch, name})
   end
 
   @doc """
@@ -65,7 +59,7 @@ defmodule Stopwatch.Timer do
 
   This will also remove it from the active timers.
   """
-  @spec lap(Stopwatch.Watch) :: Stopwatch.Watch
+  @spec stop(Stopwatch.Watch) :: Stopwatch.Watch
   def stop(stopwatch) do
     GenServer.call(:timer_server, {:stop, stopwatch})
   end
@@ -89,58 +83,54 @@ defmodule Stopwatch.Timer do
   end
 
   # GenServer callbacks
-  def handle_call({:stop, name}, _, stopwatches) do
-    {stopwatch, new_list} = pop_stopwatch(stopwatches, name)
+  def handle_call({:start, start_time}, _, stopwatches) do
+    watch = Watch.new(start_time)
+    {:reply, watch, [watch | stopwatches]}
+  end
+
+  def handle_call({:lap, watch, lap_name}, _, stopwatches) do
+    {watch, new_list} = pop_stopwatch(stopwatches, watch)
+    new_watch = Watch.lap(watch, lap_name)
+    {:reply, new_watch, [new_watch | new_list]}
+  end
+
+  def handle_call({:stop, watch}, _, stopwatches) do
+    {stopwatch, new_list} = pop_stopwatch(stopwatches, watch)
     {:reply, Watch.stop(stopwatch), new_list}
   end
 
   def handle_call({:peek, _}, _, []) do
     raise "There are no active stop watches"
   end
-  def handle_call({:peek, name}, _, stopwatches) do
-    {:reply, Watch.total_time(get_stopwatch(stopwatches, name)), stopwatches}
+  def handle_call({:peek, watch}, _, stopwatches) do
+    {:reply, Watch.total_time(get_stopwatch(stopwatches, watch)), stopwatches}
   end
 
   def handle_call(:count, _, stopwatches) do
     {:reply, length(stopwatches), stopwatches}
   end
 
-  def handle_cast({:start, name, start_time}, stopwatches) do
-    {_, stopwatches} = pop_stopwatch(stopwatches, name)
-    stopwatch = Watch.new(name, start_time)
-    {:noreply, [stopwatch | stopwatches]}
-  end
-
-  def handle_cast({:lap, name, lap_name}, stopwatches) do
-    {stopwatch, new_list} = pop_stopwatch(stopwatches, name)
-    {:noreply, [Watch.lap(stopwatch, lap_name) | new_list]}
-  end
-
   def handle_cast(:clear, _) do
     {:noreply, []}
   end
 
-  defp pop_stopwatch(stopwatches, name) do
-    if exists?(stopwatches, name) do
-      {get_stopwatch(stopwatches, name), delete_stopwatch(stopwatches, name)}
+  defp pop_stopwatch(stopwatches, watch) do
+    if exists?(stopwatches, watch) do
+      {get_stopwatch(stopwatches, watch), delete_stopwatch(stopwatches, watch)}
     else
       {nil, stopwatches}
     end
   end
 
-  defp get_stopwatch(stopwatches, name) do
-    Enum.find(stopwatches, name_checker(name))
+  defp get_stopwatch(stopwatches, watch) do
+    Enum.find(stopwatches, &(&1 === watch))
   end
 
-  defp delete_stopwatch(stopwatches, name) do
-    Enum.reject(stopwatches, name_checker(name))
+  defp delete_stopwatch(stopwatches, watch) do
+    Enum.reject(stopwatches, &(&1 === watch))
   end
 
-  defp exists?(stopwatches, name) do
-    get_stopwatch(stopwatches, name) !== nil
-  end
-
-  defp name_checker(name) do
-    &(&1.name === name)
+  defp exists?(stopwatches, watch) do
+    get_stopwatch(stopwatches, watch) !== nil
   end
 end

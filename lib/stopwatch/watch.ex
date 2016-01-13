@@ -1,11 +1,11 @@
 defmodule Stopwatch.Watch do
   use Timex
   use Stopwatch
-  defstruct name: nil, start_time: nil, laps: [], finish_time: nil
+  defstruct start_time: nil, laps: [], finish_time: nil
 
   @doc false
-  def new(name, start_time \\ Time.now) do
-    %Watch{name: name, start_time: start_time}
+  def new(start_time \\ Time.now) do
+    %Watch{start_time: start_time}
   end
 
   @doc false
@@ -44,4 +44,24 @@ defmodule Stopwatch.Watch do
     method = "to_#{to_string(unit)}"
     apply(Timex.Time, String.to_atom(method), [time])
   end
+
+  @doc """
+  extract lap names from a watch
+  """
+  @spec lap_names(Stopwatch.Watch) :: [binary]
+  def lap_names(%Watch{laps: []}), do: []
+  def lap_names(%Watch{laps: laps}) do
+    laps
+    |> Enum.map(&(elem(&1, 0)))
+    |> Enum.reverse
+  end
+
+  @doc """
+  extract laps from a watch
+
+  the output is a list of tuples with {name, time}
+  """
+  @spec laps(Stopwatch.Watch) :: [{binary, {integer, integer, integer}}]
+  def laps(%Watch{laps: []}), do: []
+  def laps(%Watch{laps: laps}), do: Enum.reverse(laps)
 end
