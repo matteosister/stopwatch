@@ -7,11 +7,16 @@ defmodule Stopwatch do
 
   ## Examples
 
-      iex> watch = Stopwatch.Timer.start
-      ...> :timer.sleep(10)
-      ...> watch = Stopwatch.Timer.stop(watch)
-      ...> Stopwatch.Watch.total_time(watch) >= 10
-      true
+      use Stopwatch
+      timer = Timer.start
+      query_db()
+      timer = Timer.lap(timer, "query db")
+      export_to_csv()
+      final_timer = Timer.stop(timer)
+
+      IO.puts(Watch.total_time(final_timer)) # 15808.752 defaults to microsecs
+      IO.puts(Watch.total_time(final_timer, :secs)) # 15.808752
+      IO.puts(Watch.total_time(final_timer, :usecs)) # 15808752
   """
   use Application
 

@@ -1,7 +1,6 @@
 defmodule Stopwatch.TimerTest do
   use ExUnit.Case
   use Stopwatch
-  doctest Stopwatch.Timer
 
   setup do
     Timer.clear
@@ -12,13 +11,13 @@ defmodule Stopwatch.TimerTest do
   end
 
   test "count after insert is 1" do
-    Timer.start :test
+    Timer.start
     assert 1 === Timer.count
   end
 
   test "count after insert and stop is 0" do
-    t = Timer.start :test
-    Timer.stop t
+    Timer.start
+    |> Timer.stop
     assert 0 === Timer.count
   end
 end

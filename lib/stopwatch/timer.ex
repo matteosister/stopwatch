@@ -2,12 +2,13 @@ defmodule Stopwatch.Timer do
   @moduledoc """
   This module provides a friendly API for working with timers
 
-  It allows you to start, lap and stop Watch structs
-  """
+  It allows you to start, lap and stop
 
+  internally it is a GenServer implementation that wraps around the list of
+  active timers.
+  """
   use GenServer
   use Timex
-  use Stopwatch
 
   @doc false
   def start_link do
@@ -17,7 +18,7 @@ defmodule Stopwatch.Timer do
   @doc """
   Start a new timer by giving it an optional start time
   """
-  @spec start(Timex.Time) :: Watch
+  @spec start(Timex.Time) :: Stopwatch.Watch
   def start(start_time \\ Time.now) do
     GenServer.call(:timer_server, {:start, start_time})
   end
@@ -26,15 +27,14 @@ defmodule Stopwatch.Timer do
   Count the active timers
 
   ## Examples
-      iex> use Stopwatch
-      ...> Timer.count
+      iex> Stopwatch.Timer.count
       0
 
-      iex> Timer.start("test")
+      iex> Stopwatch.Timer.start("test")
       ...> Timer.count
       1
 
-      iex> Timer.stop("test")
+      iex> Stopwatch.Timer.stop("test")
       ...> Timer.count
       0
   """
@@ -84,26 +84,26 @@ defmodule Stopwatch.Timer do
 
   # GenServer callbacks
   def handle_call({:start, start_time}, _, stopwatches) do
-    watch = Watch.new(start_time)
+    watch = Stopwatch.Watch.new(start_time)
     {:reply, watch, [watch | stopwatches]}
   end
 
   def handle_call({:lap, watch, lap_name}, _, stopwatches) do
     {watch, new_list} = pop_stopwatch(stopwatches, watch)
-    new_watch = Watch.lap(watch, lap_name)
+    new_watch = Stopwatch.Watch.lap(watch, lap_name)
     {:reply, new_watch, [new_watch | new_list]}
   end
 
   def handle_call({:stop, watch}, _, stopwatches) do
     {stopwatch, new_list} = pop_stopwatch(stopwatches, watch)
-    {:reply, Watch.stop(stopwatch), new_list}
+    {:reply, Stopwatch.Watch.stop(stopwatch), new_list}
   end
 
   def handle_call({:peek, _}, _, []) do
     raise "There are no active stop watches"
   end
   def handle_call({:peek, watch}, _, stopwatches) do
-    {:reply, Watch.total_time(get_stopwatch(stopwatches, watch)), stopwatches}
+    {:reply, Stopwatch.Watch.total_time(get_stopwatch(stopwatches, watch)), stopwatches}
   end
 
   def handle_call(:count, _, stopwatches) do

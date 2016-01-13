@@ -1,6 +1,5 @@
 defmodule Stopwatch.WatchTest do
   use ExUnit.Case, async: false
-  doctest Stopwatch.Watch
   use Stopwatch
   use Timex
   import Mock
@@ -34,6 +33,11 @@ defmodule Stopwatch.WatchTest do
     w = Timer.lap(w)
     w = Timer.lap(w)
     assert Watch.laps(w) === [{nil, {1, 0, 2}}, {nil, {1, 0, 2}}]
+  end
+
+  test "empty list for timer without laps" do
+    w = Timer.start
+    assert Watch.laps(w) === []
   end
 
   test "lap names" do

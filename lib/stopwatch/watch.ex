@@ -9,14 +9,16 @@ defmodule Stopwatch.Watch do
   end
 
   @doc false
-  def lap(watch, name) do
-    Map.update!(watch, :laps, &([{name, Time.now} | &1]))
+  def lap(watch, name, at \\ Time.now) do
+    Map.update!(watch, :laps, &([{name, at} | &1]))
   end
 
   @doc false
   def stop(watch, at \\ Time.now)
   def stop(watch = %Watch{finish_time: nil}, at) do
-    Map.update!(watch, :finish_time, fn(_) -> at end)
+    watch
+    |> Map.update!(:finish_time, fn(_) -> at end)
+    |> lap(:stop, at)
   end
   def stop(watch, _), do: watch
 
@@ -34,10 +36,15 @@ defmodule Stopwatch.Watch do
   """
   def total_time(watch, unit \\ :msecs)
   def total_time(%Watch{start_time: start, finish_time: nil}, unit) do
-    Time.sub(Time.now, start) |> convert_time(unit) |> round
+    calculate_diff(start, Time.now)
   end
   def total_time(%Watch{start_time: start, finish_time: finish}, unit) do
-    Time.sub(finish, start) |> convert_time(unit) |> round
+    calculate_diff(start, finish)
+  end
+
+  defp calculate_diff(from, to, unit \\ :msecs) do
+    Time.sub(to, from)
+    |> convert_time(unit)
   end
 
   defp convert_time(time, unit) do
@@ -46,22 +53,34 @@ defmodule Stopwatch.Watch do
   end
 
   @doc """
-  extract lap names from a watch
-  """
-  @spec lap_names(Stopwatch.Watch) :: [binary]
-  def lap_names(%Watch{laps: []}), do: []
-  def lap_names(%Watch{laps: laps}) do
-    laps
-    |> Enum.map(&(elem(&1, 0)))
-    |> Enum.reverse
-  end
-
-  @doc """
   extract laps from a watch
 
   the output is a list of tuples with {name, time}
   """
   @spec laps(Stopwatch.Watch) :: [{binary, {integer, integer, integer}}]
-  def laps(%Watch{laps: []}), do: []
-  def laps(%Watch{laps: laps}), do: Enum.reverse(laps)
+  def laps(watch, unit \\ :msecs)
+  def laps(watch = %Watch{laps: []}, unit) do
+    [{:total_time, total_time(watch, unit)}]
+  end
+  def laps(watch = %Watch{start_time: start, finish_time: finish, laps: laps}, unit) do
+    lap_times = laps
+    |> Enum.reverse
+    |> Enum.reduce([], lap_reducer(start))
+    |> Enum.map(fn({name, {from, to}}) -> {name, calculate_diff(from, to)} end)
+
+    lap_times ++ [{:total_time, total_time(watch, unit)}]
+  end
+
+  defp lap_reducer(start) do
+    fn
+      {name, finish}, [] ->
+        [{name, {start, finish}}]
+      {name, finish}, previous_laps ->
+        last_lap_finish = previous_laps
+        |> List.last
+        |> elem(1)
+        |> elem(1)
+        previous_laps ++ [{name, {last_lap_finish, finish}}]
+    end
+  end
 end
