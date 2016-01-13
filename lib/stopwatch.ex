@@ -17,6 +17,8 @@ defmodule Stopwatch do
       IO.puts(Watch.total_time(final_timer)) # 15808.752 defaults to microsecs
       IO.puts(Watch.total_time(final_timer, :secs)) # 15.808752
       IO.puts(Watch.total_time(final_timer, :usecs)) # 15808752
+
+      IO.puts(Watch.laps())
   """
   use Application
 

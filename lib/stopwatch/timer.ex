@@ -49,9 +49,9 @@ defmodule Stopwatch.Timer do
 
   You can optionally give the a name to the lap for later use
   """
-  @spec lap(Stopwatch.Watch, binary) :: Stopwatch.Watch
-  def lap(watch, name \\ nil) do
-    GenServer.call(:timer_server, {:lap, watch, name})
+  @spec lap(Stopwatch.Watch, binary, Timex.Time) :: Stopwatch.Watch
+  def lap(watch, name \\ nil, at \\ Time.now) do
+    GenServer.call(:timer_server, {:lap, watch, name, at})
   end
 
   @doc """
@@ -60,8 +60,8 @@ defmodule Stopwatch.Timer do
   This will also remove it from the active timers.
   """
   @spec stop(Stopwatch.Watch) :: Stopwatch.Watch
-  def stop(stopwatch) do
-    GenServer.call(:timer_server, {:stop, stopwatch})
+  def stop(watch, at \\ Time.now) do
+    GenServer.call(:timer_server, {:stop, watch, at})
   end
 
   @doc """
@@ -88,15 +88,15 @@ defmodule Stopwatch.Timer do
     {:reply, watch, [watch | stopwatches]}
   end
 
-  def handle_call({:lap, watch, lap_name}, _, stopwatches) do
+  def handle_call({:lap, watch, lap_name, at}, _, stopwatches) do
     {watch, new_list} = pop_stopwatch(stopwatches, watch)
-    new_watch = Stopwatch.Watch.lap(watch, lap_name)
+    new_watch = Stopwatch.Watch.lap(watch, lap_name, at)
     {:reply, new_watch, [new_watch | new_list]}
   end
 
-  def handle_call({:stop, watch}, _, stopwatches) do
+  def handle_call({:stop, watch, at}, _, stopwatches) do
     {stopwatch, new_list} = pop_stopwatch(stopwatches, watch)
-    {:reply, Stopwatch.Watch.stop(stopwatch), new_list}
+    {:reply, Stopwatch.Watch.stop(stopwatch, at), new_list}
   end
 
   def handle_call({:peek, _}, _, []) do

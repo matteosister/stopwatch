@@ -9,7 +9,7 @@ defmodule Stopwatch.Watch do
   end
 
   @doc false
-  def lap(watch, name, at \\ Time.now) do
+  def lap(watch, name, at) do
     Map.update!(watch, :laps, &([{name, at} | &1]))
   end
 
@@ -36,10 +36,10 @@ defmodule Stopwatch.Watch do
   """
   def total_time(watch, unit \\ :msecs)
   def total_time(%Watch{start_time: start, finish_time: nil}, unit) do
-    calculate_diff(start, Time.now)
+    calculate_diff(start, Time.now, unit)
   end
   def total_time(%Watch{start_time: start, finish_time: finish}, unit) do
-    calculate_diff(start, finish)
+    calculate_diff(start, finish, unit)
   end
 
   defp calculate_diff(from, to, unit \\ :msecs) do
@@ -59,10 +59,10 @@ defmodule Stopwatch.Watch do
   """
   @spec laps(Stopwatch.Watch) :: [{binary, {integer, integer, integer}}]
   def laps(watch, unit \\ :msecs)
-  def laps(watch = %Watch{laps: []}, unit) do
-    [{:total_time, total_time(watch, unit)}]
+  def laps(%Watch{laps: []}, _) do
+    []
   end
-  def laps(watch = %Watch{start_time: start, finish_time: finish, laps: laps}, unit) do
+  def laps(watch = %Watch{start_time: start, laps: laps}, unit) do
     lap_times = laps
     |> Enum.reverse
     |> Enum.reduce([], lap_reducer(start))
