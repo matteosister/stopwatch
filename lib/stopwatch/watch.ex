@@ -1,4 +1,7 @@
 defmodule Stopwatch.Watch do
+  @moduledoc """
+  Methods for working with a Watch struct, after the Timer.stop method is called
+  """
   use Timex
   use Stopwatch
   defstruct start_time: nil, laps: [], finish_time: nil

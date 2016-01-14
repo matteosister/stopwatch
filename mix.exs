@@ -11,7 +11,8 @@ defmodule StopWatch.Mixfile do
      source_url: "https://github.com/matteosister/stopwatch",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps,
+     docs: docs]
   end
 
   # Configuration for the OTP application
@@ -51,6 +52,15 @@ defmodule StopWatch.Mixfile do
       maintainers: ["Matteo Giachino"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/matteosister/stopwatch"}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "getting-started",
+      formatter_opts: [gfm: true],
+      extras: [
+       "docs/Getting Started.md"]
     ]
   end
 end

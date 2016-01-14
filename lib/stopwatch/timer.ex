@@ -1,6 +1,6 @@
 defmodule Stopwatch.Timer do
   @moduledoc """
-  This module provides a friendly API for working with timers
+  This module provides a friendly API to start, stop and lap a watch struct
 
   It allows you to start, lap and stop
 
