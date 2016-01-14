@@ -1,4 +1,4 @@
-defmodule StopWatch.Mixfile do
+defmodule Stopwatch.Mixfile do
   use Mix.Project
 
   def project do

@@ -6,17 +6,23 @@ defmodule Stopwatch.Watch do
   use Stopwatch
   defstruct start_time: nil, laps: [], finish_time: nil
 
-  @doc false
+  @doc """
+  creates a Watch struct
+  """
   def new(start_time \\ Time.now) do
     %Watch{start_time: start_time}
   end
 
-  @doc false
+  @doc """
+  creates a new lap
+  """
   def lap(watch, name, at) do
     Map.update!(watch, :laps, &([{name, at} | &1]))
   end
 
-  @doc false
+  @doc """
+  stop the watch
+  """
   def stop(watch, at \\ Time.now)
   def stop(watch = %Watch{finish_time: nil}, at) do
     watch

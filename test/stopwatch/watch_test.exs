@@ -25,10 +25,10 @@ defmodule Stopwatch.WatchTest do
     time1 = {1452, 727938, 544438}
     time2 = {1452, 727938, 544638}
     stop  = {1452, 727938, 545038}
-    w = Timer.start(start)
-    w = Timer.lap(w, "lap 1", time1)
-    w = Timer.lap(w, "lap 2", time2)
-    w = Timer.stop(w, stop)
+    w = Watch.new(start)
+    w = Watch.lap(w, "lap 1", time1)
+    w = Watch.lap(w, "lap 2", time2)
+    w = Watch.stop(w, stop)
     assert Watch.laps(w) === [{"lap 1", 0.4}, {"lap 2", 0.2}, {:stop, 0.4}, {:total_time, 1.0}]
   end
 
@@ -41,7 +41,7 @@ defmodule Stopwatch.WatchTest do
   # end
 
   test "empty list for timer without laps" do
-    w = Timer.start
+    w = Watch.new
     assert Watch.laps(w) === []
   end
 end
