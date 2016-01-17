@@ -1,26 +1,54 @@
 defmodule Stopwatch.Watch do
   @moduledoc """
-  Methods for working with a Watch struct, after the Timer.stop method is called
+  Methods for creating, working and accessing a Watch struct
   """
   use Timex
   use Stopwatch
   defstruct start_time: nil, laps: [], finish_time: nil
 
   @doc """
-  creates a Watch struct
+  create a Watch struct with a unique name
   """
+  @spec store(binary | atom, Time) :: Stopwatch.Watch
+  def store(name, start_time \\ Time.now) do
+    watch = new(start_time)
+    WatchRepo.store(watch, name)
+  end
+
+  @doc """
+  create a Watch struct
+  """
+  @spec new(Time) :: Stopwatch.Watch
   def new(start_time \\ Time.now) do
     %Watch{start_time: start_time}
   end
 
   @doc """
-  creates a new lap
+  create a new lap
   """
-  def lap(watch, name, at) do
-    Map.update!(watch, :laps, &([{name, at} | &1]))
+  @spec lap(Stopwatch.Watch | binary | atom, binary | atom, Time) :: Stopwatch.Watch
+  def lap(watch, name, at) when is_binary(watch) or is_atom(watch) do
+    watch
+    |> WatchRepo.pop
+    |> lap(name, at)
+    |> WatchRepo.store(watch)
+  end
+  def lap(watch = %Watch{laps: laps}, name, at) do
+    %{watch | laps: [{name, at} | laps]}
   end
 
-  def lap_stop(watch, name, at \\ Time.now) do
+  @doc """
+  create a new lap and stop the timer
+  """
+  @spec last_lap(Stopwatch.Watch | binary | atom, binary | atom, Time) :: Stopwatch.Watch
+  def last_lap(watch, name, at \\ Time.now)
+  def last_lap(watch, name, at) when is_binary(watch) or is_atom(watch) do
+    watch
+    |> WatchRepo.pop
+    |> last_lap(name, at)
+    |> WatchRepo.store(watch)
+  end
+  def last_lap(watch, name, at) when is_binary(name) do
     watch
     |> lap(name, at)
     |> stop(at)
@@ -29,21 +57,47 @@ defmodule Stopwatch.Watch do
   @doc """
   stop the watch
   """
+  @spec stop(Stopwatch.Watch | binary | atom, Time) :: Stopwatch.Watch
   def stop(watch, at \\ Time.now)
-  def stop(watch = %Watch{finish_time: nil}, at) do
+  def stop(watch, at) when is_binary(watch) or is_atom(watch) do
     watch
-    |> Map.update!(:finish_time, fn(_) -> at end)
+    |> WatchRepo.pop
+    |> stop(at)
+  end
+  def stop(watch = %Watch{finish_time: nil}, at) do
+    %{watch | finish_time: at }
     |> add_stop_lap(at)
   end
   def stop(watch, _), do: watch
 
-  defp add_stop_lap(watch = %Watch{finish_time: finish_time}, at) do
+  defp add_stop_lap(watch, at) when is_binary(watch) or is_atom(watch) do
+    watch
+    |> WatchRepo.pop
+    |> add_stop_lap(at)
+    |> WatchRepo.store(watch)
+  end
+  defp add_stop_lap(watch, at) do
     case last_lap_finish_time(watch) === at do
       true  -> watch
       false -> lap(watch, :stop, at)
     end
   end
 
+  @doc """
+  return the last lap finish time. If the watch do not have any laps returns nil
+
+  ## Examples
+
+      iex> use Stopwatch
+      iex> w = Watch.new |> Watch.last_lap_finish_time
+      nil
+
+      iex> use Stopwatch
+      ...> w = Watch.new({1452, 727938, 544038}) |> Watch.last_lap("all done", {1452, 727938, 544438})
+      ...> Watch.last_lap_finish_time(w)
+      {1452, 727938, 544438}
+  """
+  @spec last_lap_finish_time(Stopwatch.Watch | binary | atom) :: {integer, integer, integer}
   def last_lap_finish_time(%Watch{laps: []}), do: nil
   def last_lap_finish_time(%Watch{laps: [last_lap | _]}) do
     elem(last_lap, 1)
@@ -61,6 +115,7 @@ defmodule Stopwatch.Watch do
   - :days
   - :weeks
   """
+  @spec total_time(Stopwatch.Watch, atom) :: float | integer
   def total_time(watch, unit \\ :msecs)
   def total_time(%Watch{start_time: start, finish_time: nil}, unit) do
     calculate_diff(start, Time.now, unit)

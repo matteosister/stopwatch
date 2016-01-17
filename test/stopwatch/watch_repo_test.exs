@@ -15,9 +15,9 @@ defmodule Stopwatch.WatchRepoTest do
     assert 1 === WatchRepo.count
   end
 
-  test "count after insert and stop is 0" do
+  test "count after insert and pop is 0" do
     WatchRepo.store(Watch.new, :test2)
-    WatchRepo.stop(:test2) 
+    WatchRepo.pop(:test2)
     assert 0 === WatchRepo.count
   end
 end
