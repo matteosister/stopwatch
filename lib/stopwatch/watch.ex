@@ -20,6 +20,12 @@ defmodule Stopwatch.Watch do
     Map.update!(watch, :laps, &([{name, at} | &1]))
   end
 
+  def lap_stop(watch, name, at \\ Time.now) do
+    watch
+    |> lap(name, at)
+    |> stop(at)
+  end
+
   @doc """
   stop the watch
   """
@@ -27,9 +33,21 @@ defmodule Stopwatch.Watch do
   def stop(watch = %Watch{finish_time: nil}, at) do
     watch
     |> Map.update!(:finish_time, fn(_) -> at end)
-    |> lap(:stop, at)
+    |> add_stop_lap(at)
   end
   def stop(watch, _), do: watch
+
+  defp add_stop_lap(watch = %Watch{finish_time: finish_time}, at) do
+    case last_lap_finish_time(watch) === at do
+      true  -> watch
+      false -> lap(watch, :stop, at)
+    end
+  end
+
+  def last_lap_finish_time(%Watch{laps: []}), do: nil
+  def last_lap_finish_time(%Watch{laps: [last_lap | _]}) do
+    elem(last_lap, 1)
+  end
 
   @doc """
   gets a timer total time

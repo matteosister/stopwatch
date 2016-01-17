@@ -32,6 +32,14 @@ defmodule Stopwatch.WatchTest do
     assert Watch.laps(w) === [{"lap 1", 0.4}, {"lap 2", 0.2}, {:stop, 0.4}, {:total_time, 1.0}]
   end
 
+  test "lap_stop method" do
+    start = {1452, 727938, 544038}
+    stop  = {1452, 727938, 544438}
+    w = Watch.new(start)
+    w = Watch.lap_stop(w, "total_time", stop)
+    assert Watch.laps(w) === [{"total_time", 0.4}, {:total_time, 0.4}]
+  end
+
   # I need to mock the Time.now function to know what the result will be
   # test_with_mock "laps without name", Timex.Time, [now: fn -> {1, 0, 2} end] do
   #   w = Timer.start
