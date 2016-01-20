@@ -41,16 +41,16 @@ defmodule Stopwatch.WatchTest do
     assert Watch.laps(w) === [{"the_only_lap", 0.4}, {:total_time, 0.4}]
   end
 
-  # I need to mock the Time.now function to know what the result will be
-  # test_with_mock "laps without name", Timex.Time, [now: fn -> {1, 0, 2} end] do
-  #   w = Timer.start
-  #   w = Timer.lap(w)
-  #   w = Timer.lap(w)
-  #   assert Watch.laps(w) === [{nil, {1, 0, 2}}, {nil, {1, 0, 2}}]
-  # end
-
   test "empty list for timer without laps" do
     w = Watch.new
     assert Watch.laps(w) === []
+  end
+
+  test "stop! throws exceptions" do
+    w = Watch.new
+    w = Watch.stop!(w)
+    assert_raise ArgumentError, "you cannot stop an already stopped watch", fn ->
+      Watch.stop!(w)
+    end
   end
 end
