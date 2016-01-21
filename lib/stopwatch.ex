@@ -5,7 +5,6 @@ defmodule Stopwatch do
   defmacro __using__(_) do
     quote do
       alias Stopwatch.Watch
-      alias Stopwatch.WatchRepo
     end
   end
 

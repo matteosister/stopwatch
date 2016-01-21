@@ -3,7 +3,6 @@ defmodule Stopwatch.WatchTest do
   doctest Stopwatch.Watch
   use Stopwatch
   use Timex
-  import Mock
 
   test "new timer" do
     time = Time.zero
