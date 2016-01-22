@@ -3,7 +3,7 @@ defmodule Stopwatch.Mixfile do
 
   def project do
     [app: :stopwatch,
-     version: "0.0.5",
+     version: "0.0.6",
      elixir: "~> 1.0",
      description: description,
      package: package,
@@ -56,7 +56,7 @@ defmodule Stopwatch.Mixfile do
 
   defp docs do
     [
-      main: "extra-getting-started",
+      main: "getting-started",
       formatter_opts: [gfm: true],
       extras: [
        "docs/Getting Started.md"]

@@ -12,7 +12,7 @@ The package can be installed as:
   1. Add stopwatch to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:stopwatch, "~> 0.0.1"}]
+          [{:stopwatch, ">= 0.0.0"}]
         end
 
   2. Ensure stopwatch is started before your application:
