@@ -4,7 +4,7 @@
 
 Stopwatch is a library to measure elapsed time. It's main use is code profiling and logging.
 
-### Basic Usage
+# Basic Usage
 
 ```
 use Stopwatch
@@ -14,7 +14,7 @@ watch = Watch.stop(watch) # remember, immutability!
 IO.puts Watch.get_total_time(watch) # 16839.722, number of milliseconds elapsed
 ```
 
-### Laps
+# Laps
 
 You can use this feature to store many laps on a single timer
 
