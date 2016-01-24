@@ -128,7 +128,7 @@ defmodule Stopwatch.Watch do
   def get_lap_time(watch, name, unit \\ :msecs)
   def get_lap_time(%Watch{laps: []}, _, _), do: nil
   def get_lap_time(%Watch{laps: laps}, name, unit) do
-    case Enum.find(laps, nil, lap_matcher(name)) do
+    case Enum.find(laps, nil, match_lap_by_name(name)) do
       nil             -> nil
       {_, {from, to}} -> calculate_diff(from, to, unit)
     end
@@ -143,7 +143,7 @@ defmodule Stopwatch.Watch do
   """
   @spec get_lap_time!(Stopwatch.Watch, any, atom) :: number
   def get_lap_time!(%Watch{laps: laps}, name, unit \\ :msecs) do
-    case Enum.find(laps, nil, lap_matcher(name)) do
+    case Enum.find(laps, nil, match_lap_by_name(name)) do
       nil             -> raise ArgumentError, "the lap named #{name} was not found"
       {_, {from, to}} -> calculate_diff(from, to, unit)
     end
@@ -165,11 +165,8 @@ defmodule Stopwatch.Watch do
     finish_time
   end
 
-  defp lap_matcher(name) do
-    fn
-      {^name, _} -> true
-      _          -> false
-    end
+  defp match_lap_by_name(name) do
+    &match?({^name, _}, &1)
   end
 
   defp lap_name({name, _}), do: name
