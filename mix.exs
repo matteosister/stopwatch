@@ -3,7 +3,7 @@ defmodule Stopwatch.Mixfile do
 
   def project do
     [app: :stopwatch,
-     version: "0.0.6",
+     version: "0.0.7",
      elixir: "~> 1.0",
      description: description,
      package: package,
@@ -19,8 +19,7 @@ defmodule Stopwatch.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :tzdata],
-     mod: {Stopwatch, []}]
+    [applications: [:logger, :tzdata]]
   end
 
   # Dependencies can be Hex packages:
